@@ -1,0 +1,265 @@
+/***************************************/
+/* Import Nunito Sans font from google */
+/***************************************/
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+	font-family: 'Nunito Sans', sans-serif;
+	transition: all 0.3s;
+	box-sizing: border-box;
+}
+
+*:focus {
+	outline: none;
+}
+
+html {
+	font-size: 16px;
+}
+
+i,
+button {
+	font-weight: 400;
+}
+
+button:focus {
+	outline: none !important;
+}
+
+h2 {
+	font-weight: 800;
+}
+
+h5 {
+	font-weight: 700;
+}
+
+a,
+a:hover {
+	text-decoration: none;
+	color: #424242;
+}
+
+/* Background */
+.bg-wave-pattern {
+	background: #f5f5f5 url('../img/bg-waveline.png') no-repeat center bottom;
+	background-size: 100%;
+}
+
+/* Buttons */
+.sentie-btn-green {
+	border: 1px solid #8eaf04;
+	background-color: #8eaf04;
+}
+
+.sentie-btn-grey {
+	color: white !important;
+	border: 1px solid #424242;
+	background-color: #424242;
+}
+
+.sentie-btn-grey:hover {
+	filter: brightness(1.4) !important;
+}
+
+.sentie-btn-primary {
+	min-width: 160px;
+	padding: 0.5rem;
+	color: white;
+	border-radius: 8px;
+	font-weight: 300 !important;
+}
+
+.sentie-btn-primary:hover {
+	filter: brightness(1.1);
+}
+
+.sentie-btn-secondary {
+	min-width: 160px;
+	padding: 0.5rem;
+	border-radius: 8px;
+	border: 1px solid #424242;
+}
+
+.sentie-btn-secondary:hover {
+	filter: brightness(0.9);
+}
+
+.sentie-btn-cancel {
+	border: none;
+	background-color: rgba(0, 0, 0, 0);
+	color: #9e9e9e;
+}
+
+.sentie-btn-cancel:hover {
+	color: #424242;
+}
+
+/* Override material icons reansition delay */
+.material-icons {
+	transition: all 0s;
+}
+/* Override Fontawsone */
+.fas {
+	line-height: unset !important;
+}
+
+@media (max-width: 490px) {
+	/* Stack More Info button and Demo App Code button vertically */
+	.demo-app-btn-container {
+		flex-direction: column !important;
+	}
+}
+
+/*--------------*/
+/*    Corners   */
+/*--------------*/
+.rounded-bottom-lg {
+	border-radius: 0 0 0.3rem 0.3rem !important;
+}
+.rounded-top-lg {
+	border-radius: 0.3rem 0.3rem 0 0 !important;
+}
+
+/*********************/
+/*     Textarea      */
+/*********************/
+.sentie-textarea {
+	width: 100%;
+	border: 10px solid white;
+}
+
+/*------------------*/
+/*    Scroll Bar    */
+/*------------------*/
+/* width */
+div ::-webkit-scrollbar {
+	width: 10px;
+}
+/* Track */
+div ::-webkit-scrollbar-track {
+	background: none;
+}
+/* Handle */
+div ::-webkit-scrollbar-thumb {
+	background: #c9cfd2;
+	border-radius: 8px;
+	border: white 2px solid;
+}
+/* Handle on hover */
+div ::-webkit-scrollbar-thumb:hover {
+	background: #b0b7bb;
+}
+
+/*--------------------*/
+/*    Marsonry Card   */
+/*--------------------*/
+.card-columns {
+	column-count: 2;
+	column-gap: 10px;
+}
+
+@media (max-width: 1100px) {
+	.card-columns {
+		column-count: 1;
+	}
+}
+
+@media (max-width: 991px) {
+	.card-columns {
+		column-count: 2;
+	}
+}
+
+@media (max-width: 700px) {
+	.card-columns {
+		column-count: 1;
+	}
+}
+
+.card-title-container {
+	padding: 0.25rem;
+	display: flex;
+	display: -ms-flexbox;
+	justify-content: center;
+	-ms-flex-pack: center;
+}
+
+.card-link-container {
+	padding: 0.5rem;
+	line-height: 28px;
+}
+
+.card-link {
+	padding-right: 0.5rem;
+	padding-left: 0.5rem;
+	margin: 4px;
+	display: inline-block;
+	border-radius: 10px !important;
+}
+
+.card-link + .card-link {
+	margin-left: 0px !important;
+}
+
+.icon-link::before {
+	display: inline;
+	border-radius: 10px !important;
+	padding-left: 0.25rem;
+	padding-right: 0.25rem;
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+	content: '\f0c1';
+	font-size: 12px;
+}
+
+.card-link-underline {
+	text-decoration: underline !important;
+}
+
+.icon-check::after {
+	display: inline;
+	border-radius: 10px !important;
+	padding-left: 0.5rem;
+	padding-right: 0.25rem;
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+	color: seagreen;
+	content: '\f00c';
+	font-size: 12px;
+}
+
+.icon-loading::after {
+	display: inline;
+	border-radius: 10px !important;
+	padding-left: 0.5rem;
+	padding-right: 0.25rem;
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+	color: rgb(167, 167, 167);
+	content: '\f110';
+	font-size: 12px;
+}
+
+.icon-no-result::after {
+	display: inline;
+	border-radius: 10px !important;
+	padding-left: 0.5rem;
+	padding-right: 0.25rem;
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+	color: rgb(154, 154, 154);
+	content: '\f128';
+	font-size: 12px;
+}
+/*-------------------------*/
+/*    Sentient.io Loader   */
+/*-------------------------*/
+.sentie-loader {
+	position: fixed;
+	z-index: 999;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(2px);
+}
