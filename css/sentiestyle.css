@@ -223,7 +223,7 @@ div ::-webkit-scrollbar-thumb:hover {
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 900;
 	color: seagreen;
-	content: '\s  \f00c';
+	content: '  \f00c';
 	font-size: 12px;
 }
 
