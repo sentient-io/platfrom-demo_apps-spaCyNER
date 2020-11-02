@@ -206,10 +206,9 @@ div ::-webkit-scrollbar-thumb:hover {
 	display: inline;
 	border-radius: 10px !important;
 	padding-left: 0.25rem;
-	padding-right: 0.25rem;
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 900;
-	content: '\f0c1';
+	content: '\f0c1  ';
 	font-size: 12px;
 }
 
@@ -220,36 +219,35 @@ div ::-webkit-scrollbar-thumb:hover {
 .icon-check::after {
 	display: inline;
 	border-radius: 10px !important;
-	padding-left: 0.5rem;
 	padding-right: 0.25rem;
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 900;
 	color: seagreen;
-	content: '\f00c';
+	content: '\s  \f00c';
 	font-size: 12px;
 }
 
 .icon-loading::after {
-	display: inline;
-	border-radius: 10px !important;
-	padding-left: 0.5rem;
+	display: inline-block;
+	width: 14px;
+	height: 14px;
 	padding-right: 0.25rem;
-	font-family: 'Font Awesome 5 Free';
-	font-weight: 900;
+	border-radius: 10px !important;
 	color: rgb(167, 167, 167);
-	content: '\f110';
-	font-size: 12px;
+	background-image: url('../img/loading.gif');
+	background-repeat: no-repeat;
+	background-size: 14px 14px;
+	content: " ";
 }
 
 .icon-no-result::after {
 	display: inline;
 	border-radius: 10px !important;
-	padding-left: 0.5rem;
 	padding-right: 0.25rem;
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 900;
 	color: rgb(154, 154, 154);
-	content: '\f128';
+	content: '  \f128';
 	font-size: 12px;
 }
 /*-------------------------*/
@@ -262,4 +260,43 @@ div ::-webkit-scrollbar-thumb:hover {
 	height: 100vh;
 	background-color: rgba(255, 255, 255, 0.8);
 	backdrop-filter: blur(2px);
+}
+
+/* +---------+ */
+/* |  Alert  | */
+/* +---------+ */
+@keyframes alert-motion {
+	0% {
+		top: 55vh;
+		opacity: 0%;
+	}
+	50% {
+		top: 50vh;
+		opacity: 100%;
+	}
+	80% {
+		opacity: 100%;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.dmo-alert-container {
+	position: absolute;
+	opacity: 0;
+	z-index: 99;
+	top: 50vh;
+	width: 100%;
+	animation-name: alert-motion;
+	animation-duration: 4s;
+}
+
+.dmo-alert-content {
+	max-width: 600px;
+	padding: 8px;
+	border-radius: 8px;
+	margin: auto;
+	background-color: rgba(255, 255, 255, 0.9);
+	text-align: center;
 }

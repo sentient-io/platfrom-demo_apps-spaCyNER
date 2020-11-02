@@ -14,7 +14,7 @@ clearText = (textAreaId) => {
 };
 
 handelRestart = () => {
-	clearText("textArea")
+	clearText('textArea');
 	// Clean rendered CardLinks
 	$('#result').empty();
 	$('#resultContainer').hide();
@@ -71,7 +71,7 @@ renderCardTags = (params) => {
 		`background-color: hsla(${color} .4); color:#424242 `,
 	]);
 	let titleIcon = createDomElement(['span', `mr-2 fas ${icon}`, '']);
-	let title = createDomElement(['h5', 'm-0 card-title text-center', '']);
+	let title = createDomElement(['b', 'm-0 card-title text-center', '']);
 	let cardLinkContainer = createDomElement(['div', 'card-link-container', '']);
 	$(title).html(`${params.category}`);
 
@@ -101,10 +101,7 @@ renderCardTags = (params) => {
 			`delayWikiRetrieval("${keyword}", "${cardLinkId}")`
 		);
 
-		$(wikiLink).attr(
-			'onmouseout',
-			`cancelWikiRetrival()`
-		);
+		$(wikiLink).attr('onmouseout', `cancelWikiRetrival()`);
 
 		// Create bootstrap tool tip
 		$(wikiLink).attr('data-toggle', 'tooltip');
@@ -170,3 +167,30 @@ loadingEnd = () => {
 $('#textArea').keyup(function () {
 	$('#word-counter').text($.trim(this.value.length) + '/5000');
 });
+
+// +---------+ //
+// |  Alert  | //
+// +---------+ //
+toggleAlert = (data) => {
+	console.log('Alert toggled')
+	let id = data.id;
+	let message = data.message;
+	let color = data.color;
+
+	let alertContainer = document.createElement('div');
+	alertContainer.setAttribute('id', `${id}-alert`);
+	alertContainer.setAttribute('class', 'dmo-alert-container');
+	let alertContent = document.createElement('div');
+	alertContent.setAttribute('class', 'dmo-alert-content');
+	let alertText = document.createElement('span');
+	alertText.setAttribute('style', `color:${color}`);
+	alertText.innerHTML = message;
+
+	domAppendHelper(["#dmo-alert", alertContainer, alertContent, alertText])
+	//$('#dmo-alert').append(alertContainer)
+
+	setTimeout(() => {
+		console.log('Removing Alert')
+		$(`${id}-alert`).remove();
+	}, 5000);
+};

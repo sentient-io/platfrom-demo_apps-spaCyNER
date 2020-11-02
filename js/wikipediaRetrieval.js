@@ -7,7 +7,7 @@ delayWikiRetrieval = (keywords, cardLinkId) => {
 };
 
 cancelWikiRetrival = () => {
-	clearTimeout(timer)
+	clearTimeout(timer);
 };
 
 wikipediaRetrieval = (keywords, cardLinkId) => {
@@ -21,7 +21,7 @@ wikipediaRetrieval = (keywords, cardLinkId) => {
 	const xhr = new XMLHttpRequest();
 	// Disable mouse over event
 	$(`#${cardLinkId}`).attr('onmouseenter', ``);
-	$(`#${cardLinkId}`).attr('onmouseout', ``)
+	$(`#${cardLinkId}`).attr('onmouseout', ``);
 
 	xhr.addEventListener('readystatechange', function () {
 		if (this.readyState === this.DONE) {
@@ -33,23 +33,43 @@ wikipediaRetrieval = (keywords, cardLinkId) => {
 				link = '';
 				$(`#${cardLinkId}`).removeClass('icon-link');
 				$(`#${cardLinkId}`).addClass('icon-check');
+				toggleAlert({
+					id: cardLinkId,
+					message: `"${keywords}" retrived from Wikipedia.`,
+					color: 'green',
+				});
 			} else if (!response) {
 				summary = 'No search result';
 				link = '';
 				$(`#${cardLinkId}`).removeClass('icon-no-result');
 				$(`#${cardLinkId}`).addClass('icon-no-result');
+				toggleAlert({
+					id: cardLinkId,
+					message: `"${keywords}" failed retrive from Wikipedia.`,
+					color: 'red',
+				});
 			} else if (response['summary'].length > 120) {
 				summary = response['summary'].substring(0, 120);
 				link = response['url'];
 				$(`#${cardLinkId}`).attr('href', `${link}`);
 				$(`#${cardLinkId}`).attr('target', '_blank');
 				$(`#${cardLinkId}`).addClass('card-link-underline icon-check');
+				toggleAlert({
+					id: cardLinkId,
+					message: `"${keywords}" retrived from Wikipedia.`,
+					color: 'green',
+				});
 			} else {
 				summary = response['summary'];
 				link = response['url'];
 				$(`#${cardLinkId}`).attr('href', `${link}`);
 				$(`#${cardLinkId}`).attr('target', '_blank');
 				$(`#${cardLinkId}`).addClass('card-link-underline icon-check');
+				toggleAlert({
+					id: cardLinkId,
+					message: `"${keywords}" retrived from Wikipedia.`,
+					color: 'green',
+				});
 			}
 			// Update tool tip text
 			$(`#${cardLinkId}`).attr(
