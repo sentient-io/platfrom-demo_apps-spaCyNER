@@ -1,3 +1,15 @@
+var timer;
+
+delayWikiRetrieval = (keywords, cardLinkId) => {
+	timer = setTimeout(function () {
+		wikipediaRetrieval(keywords, cardLinkId);
+	}, 200);
+};
+
+cancelWikiRetrival = () => {
+	clearTimeout(timer)
+};
+
 wikipediaRetrieval = (keywords, cardLinkId) => {
 	// Add the loader on card links
 	$(`#${cardLinkId}`).addClass('icon-loading');
@@ -8,11 +20,11 @@ wikipediaRetrieval = (keywords, cardLinkId) => {
 
 	const xhr = new XMLHttpRequest();
 	// Disable mouse over event
-	$(`#${cardLinkId}`).attr('onmouseover', ``);
+	$(`#${cardLinkId}`).attr('onmouseenter', ``);
+	$(`#${cardLinkId}`).attr('onmouseout', ``)
 
 	xhr.addEventListener('readystatechange', function () {
 		if (this.readyState === this.DONE) {
-
 			let response = JSON.parse(this.responseText)['results'];
 			let summary;
 			let link;

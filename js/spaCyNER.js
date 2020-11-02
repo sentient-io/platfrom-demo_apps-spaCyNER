@@ -38,14 +38,14 @@ nerMappingCategory = (keyword) => {
 	let result;
 	let library = {
 		person: 'Person',
-		norp: 'Nationalities/Religious/Political Groups',
+		norp: 'Nationalities/ Religious/ Political Groups',
 		fac: 'Buildings and Facilities',
 		org: 'Organisations',
-		gpe: 'Countries/Cities/States',
+		gpe: 'Countries/ Cities/ States',
 		loc: 'Locations',
 		product: 'Objects',
 		event: 'Events',
-		work_of_art: 'Titles of Books / Songs',
+		work_of_art: 'Titles of Books/ Songs',
 		law: 'Named Documents Made Into Laws',
 		language: 'Language',
 		date: 'Date',

@@ -58,7 +58,7 @@ let params = {
 // Returns a complete card html component
 renderCardTags = (params) => {
 	let icon = params.icon;
-	let color = randomColor(0, 15, 50, 36, 1, 1, 10);
+	let color = randomColor(0, 35, 50, 36, 1, 1, 10);
 	let card = createDomElement([
 		'div',
 		'card',
@@ -97,9 +97,15 @@ renderCardTags = (params) => {
 
 		//Hover to fetch data from wikipedia
 		$(wikiLink).attr(
-			'onmouseover',
-			`wikipediaRetrieval("${keyword}", "${cardLinkId}")`
+			'onmouseenter',
+			`delayWikiRetrieval("${keyword}", "${cardLinkId}")`
 		);
+
+		$(wikiLink).attr(
+			'onmouseout',
+			`cancelWikiRetrival()`
+		);
+
 		// Create bootstrap tool tip
 		$(wikiLink).attr('data-toggle', 'tooltip');
 		$(wikiLink).attr('data-html', 'true');

@@ -91,9 +91,9 @@
             <div class="p-3 mt-5 d-flex flex-column flex-lg-row" style="min-height: 30vh;">
                 <div id="functionsContianer" class="col-12">
                     <!-- Text input -->
-                    <form action="#">
-                        <textarea id="textArea" rows="15" maxlength="5000"
-                            class="px-2 pt-2 pb-4 shadow rounded-lg sentie-textarea"></textarea>
+                    <form action="#" class="mx-auto" style="max-width: 800px;">
+                        <textarea id="textArea" rows="15" maxlength="5000" 
+                            class="px-2 pt-2 pb-4 shadow rounded-lg sentie-textarea" placeholder="Paste article here and start analyse ..."></textarea>
                         <div class="px-3 bg-white d-flex justify-content-between"
                             style="position: relative; top: -40px">
                             <p id="word-counter" style="color: rgb(186, 186, 186);"></p>
@@ -127,7 +127,7 @@
             <div class="m-auto" style="max-width: 800px;">
                 <div class="d-flex flex-column-reverse flex-sm-row justify-content-center align-items-center">
                     <button id="handelTextBtn" type="submit" value="Send" onclick="handelText('textArea'); return false"
-                        class="mb-1 mx-auto text-center sentie-btn-primary sentie-btn-grey">Handel Text</button>
+                        class="mb-1 mx-auto text-center sentie-btn-primary sentie-btn-grey">Analyse Text</button>
 
                     <button id="handelRestartBtn" onclick="handelRestart('textArea')"
                         class="mb-1 mx-auto text-center sentie-btn-secondary" style="display: none;">Restart</button>
