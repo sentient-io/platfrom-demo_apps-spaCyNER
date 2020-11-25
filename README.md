@@ -1,1 +1,1 @@
-# demo-app_spacy-ner
+# platfrom-demo_apps-spaCyNER
