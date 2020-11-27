@@ -1,36 +1,43 @@
 spaCyNER = (text) => {
-	loadingStart();
-	$.ajax({
-		method: 'post',
-		url:
-			'https://apis.sentient.io/microservices/nlp/spacyner/v1/getpredictions',
-		headers: {
-			'x-api-key': apikey,
-			'Content-Type': 'application/json',
-		},
-		data: JSON.stringify({ text: text }),
-		success: (response) => {
-			// Show result container
-			$('#resultContainer').show();
-			// Show result container at the side
-			$('#functionsContianer').attr('class', 'col-12 col-lg-6');
-			// Vertically expand text area
-			$('#textArea').attr('rows', 20);
-
-			let results = response.results;
-
-			for (items in Object.keys(results)) {
-				renderCardTags({
-					icon: nerMappingFaIcons(Object.keys(results)[items]),
-					category: nerMappingCategory(Object.keys(results)[items]),
-					details: Object.values(results)[items],
-				});
-			}
-			loadingEnd();
-		},
-		error: (err) => {
-			console.log(err);
-		},
+	console.log('Calling Spacy NER API');
+	return new Promise((resolve, reject) => {
+		loadingStart();
+		$.ajax({
+			method: 'post',
+			url:
+				'https://apis.sentient.io/microservices/nlp/spacyner/v1/getpredictions',
+			headers: {
+				'x-api-key': apikey,
+				'Content-Type': 'application/json',
+			},
+			data: JSON.stringify({ text: text }),
+			success: (response) => {
+				let results = response.results;
+				loadingEnd();
+				console.log('Success');
+				if (Object.keys(results)[0]) {
+					for (items in Object.keys(results)) {
+						renderCardTags({
+							icon: nerMappingFaIcons(Object.keys(results)[items]),
+							category: nerMappingCategory(Object.keys(results)[items]),
+							details: Object.values(results)[items],
+						});
+					}
+					resolve(results);
+				} else {
+					reject({
+						status: 'No Valid detection',
+						customErrMsg:
+							'Pleast input longer text with valid English named entities',
+					});
+				}
+			},
+			error: (err) => {
+				console.log(`Error: ${err.status}`);
+				loadingEnd();
+				reject(err);
+			},
+		});
 	});
 };
 

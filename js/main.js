@@ -1,11 +1,42 @@
+let data = {};
+let state = {};
+
+/* +---------------------+ */
+/* | Toggle Popup Alert  | */
+/* +---------------------+ */
+togglePopUpAlert = (alertTitle, alertMsg) => {
+	$('#alertContent').html(alertMsg);
+	$('#alertTitle').html(alertTitle);
+	$('#alert').modal('toggle');
+};
+
 // +--------------------+ //
 // | Text area handeler | //
 // +--------------------+ //
 handelText = (textAreaId) => {
 	let text = $(`#${textAreaId}`).val();
-	$('#handelTextBtn, #handelRestartBtn').toggle();
 	// Calling spaCyNER API
-	spaCyNER(text);
+	spaCyNER(text)
+		.then((resolve) => {
+			// Show result container
+			$('#resultContainer').show();
+			// Show result container at the side
+			$('#functionsContianer').attr('class', 'col-12 col-lg-6');
+			// Vertically expand text area
+			$('#textArea').attr('rows', 20);
+			$('#handelTextBtn, #handelRestartBtn').toggle();
+			console.log(resolve);
+		})
+		.catch((reject) => {
+			// Handle spaCyNER error
+			console.log('Error');
+			togglePopUpAlert(
+				`Error: ${reject.status}`,
+				reject.responseText
+					? JSON.parse(reject.responseText).message
+					: reject.customErrMsg
+			);
+		});
 };
 
 clearText = (textAreaId) => {
@@ -172,7 +203,7 @@ $('#textArea').keyup(function () {
 // |  Alert  | //
 // +---------+ //
 toggleAlert = (data) => {
-	console.log('Alert toggled')
+	console.log('Alert toggled');
 	let id = data.id;
 	let message = data.message;
 	let color = data.color;
@@ -186,11 +217,23 @@ toggleAlert = (data) => {
 	alertText.setAttribute('style', `color:${color}`);
 	alertText.innerHTML = message;
 
-	domAppendHelper(["#dmo-alert", alertContainer, alertContent, alertText])
+	domAppendHelper(['#dmo-alert', alertContainer, alertContent, alertText]);
 	//$('#dmo-alert').append(alertContainer)
 
 	setTimeout(() => {
-		console.log('Removing Alert')
+		console.log('Removing Alert');
 		$(`${id}-alert`).remove();
 	}, 5000);
 };
+
+/* +-------------------+ */
+/* | Handle Text Input | */
+/* +-------------------+ */
+checkContent = (e) => {
+	if (e.target.value == '') {
+		$('#handelTextBtn').attr('disabled', '');
+	} else {
+		$('#handelTextBtn').removeAttr('disabled');
+	}
+};
+document.getElementById('textArea').addEventListener('input', checkContent);
