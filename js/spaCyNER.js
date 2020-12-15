@@ -15,6 +15,7 @@ spaCyNER = (text) => {
 				let results = response.results;
 				loadingEnd();
 				console.log('Success');
+				console.log(response.results)
 				if (Object.keys(results)[0]) {
 					for (items in Object.keys(results)) {
 						renderCardTags({
@@ -52,7 +53,7 @@ nerMappingCategory = (keyword) => {
 		loc: 'Locations',
 		product: 'Objects',
 		event: 'Events',
-		work_of_art: 'Titles of Books/ Songs',
+		work_of_art: 'Works Of Art',
 		law: 'Named Documents Made Into Laws',
 		language: 'Language',
 		date: 'Date',
