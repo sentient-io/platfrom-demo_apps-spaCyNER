@@ -15,7 +15,6 @@ spaCyNER = (text) => {
 				let results = response.results;
 				loadingEnd();
 				console.log('Success');
-				console.log(response.results)
 				if (Object.keys(results)[0]) {
 					for (items in Object.keys(results)) {
 						renderCardTags({

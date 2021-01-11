@@ -10,47 +10,6 @@ togglePopUpAlert = (alertTitle, alertMsg) => {
 	$('#alert').modal('toggle');
 };
 
-/* +------------------------------------------+ */
-/* | Toggle Wikipedia Retrieval Result Pupup  | */
-/* +------------------------------------------+ */
-toggleWikiResultPopup = (e) => {
-	let id = e.id;
-	let div = document.createElement('DIV');
-	$(div).html(`
-    <div class="modal fade" id="${id}" tabindex="-1" area-hidden="true">
-    <div class="modal-dialog d-flex" style="height:100vh">
-        <div class="modal-content m-auto p-2">
-            <div class="modal-header d-flex justify-content-center">
-                <h5 class="modal-title" id="${id}Title">Retrieving data from Wikipedia...</h5>
-            </div>
-            <div class="modal-body p-3">
-                <div id="${id}Content">
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-            </div>
-        </div>
-    </div>
-    `);
-	$('#resultPopup').append(div);
-	$(`#${id}`).modal('toggle');
-};
-
-updateWikiResultPopup = (e) => {
-	let id = e.id;
-	let title = e.title;
-	let content = e.content;
-	$(`#${id}Title`).html(title);
-	$(`#${id}Content`).html(content);
-};
-
 // +--------------------+ //
 // | Text area handeler | //
 // +--------------------+ //
@@ -167,13 +126,26 @@ renderCardTags = (params) => {
 
 		$(wikiLink).html(keyword);
 
+		//Hover to fetch data from wikipedia
+		// $(wikiLink).attr(
+		// 	'onmouseenter',
+		// 	`delayWikiRetrieval("${keyword}", "${cardLinkId}")`
+		// );
+
+		// $(wikiLink).attr('onmouseout', `cancelWikiRetrival()`);
 		$(wikiLink).attr('onClick', `wikiRetrieveKeyword(this)`);
 
 		// Create bootstrap tool tip
+		$(wikiLink).attr('data-toggle', 'tooltip');
+		$(wikiLink).attr('data-html', 'true');
 		$(wikiLink).css('text-decoration', 'none !important');
+		//$(wikiLink).attr('href', '#');
+		// $(wikiLink).attr('title', 'Click keyword to retrieve data from wikipedia');
 		$(wikiLink).attr('id', `${cardLinkId}`);
 		$(cardLinkContainer).append(wikiLink);
 	}
+	// Call the function below everytime when there is a DOM change to display the Bootstrap tool tip
+	// $('[data-toggle="tooltip"]').tooltip();
 };
 
 // +----------------------------------+ //
@@ -182,71 +154,12 @@ renderCardTags = (params) => {
 wikiRetrieveKeyword = (e) => {
 	// Get text content of clicked link
 	let keyword = e.innerHTML;
-	let id = keyword.replace(/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g, '_');
-	toggleWikiResultPopup({ id: id });
 	wikipediaRetrieval(keyword)
-		.then((res) => {
-			console.log(res);
-			let response = JSON.parse(res);
-			if (
-				response.message ===
-				'Disambigutous keyword.Please choose from the below list and try again'
-			) {
-				// If there are multiple results
-				let content = '';
-				response.results.forEach((keyword) => {
-					content += `<p class="text-underline cursor-pointer" onclick="wikiRetrieveKeyword(this)">${keyword}</p>`;
-				});
-				updateWikiResultPopup({
-					id: id,
-					title: response.message,
-					content: content,
-				});
-			} else {
-				// Display single result
-				let thumbnail = '';
-				if (response.results.thumbnail) {
-					thumbnail = `
-                    <img width="160" class="border" src="${response.results.thumbnail.source}" />
-                    `;
-				}
-				let content = `
-                
-                <div class="d-flex flex-row justify-content-between wiki-retrieve-content">
-                    <div class="col-6 p-0 m-0">
-                    <h5>${keyword}</h5>
-                    <b>Page ID: </b>
-                    <p>${response.results.pageid}</p>
-                    <b class="mt-1">Wikipedia Page URL:</b> 
-                    <a class="s-link mr-2" href="${response.results.url}" target="_blank">
-                    ${response.results.url}
-                    </a>
-                    </div>
-
-                    <div class="col-6 p-0 m-0 text-right">
-                    ${thumbnail}
-                    </div>
-                </div>
-                
-                <b>Summary:</b> 
-                <br />
-                <p>${response.results.summary}</p>
-                <br/>
-                `;
-				updateWikiResultPopup({
-					id: id,
-					title: 'Wikipedia Retrieval Result',
-					content: content,
-				});
-			}
+		.then((result) => {
+			console.log(result);
 		})
 		.catch((err) => {
 			console.log(err);
-			updateWikiResultPopup({
-				id: id,
-				title: 'Oops!',
-				content: JSON.parse(err).message,
-			});
 		});
 };
 
@@ -298,6 +211,33 @@ loadingEnd = () => {
 $('#textArea').keyup(function () {
 	$('#word-counter').text($.trim(this.value.length) + '/5000');
 });
+
+// +---------+ //
+// |  Alert  | //
+// +---------+ //
+// toggleAlert = (data) => {
+// 	console.log('Alert toggled');
+// 	let id = data.id;
+// 	let message = data.message;
+// 	let color = data.color;
+
+// 	let alertContainer = document.createElement('div');
+// 	alertContainer.setAttribute('id', `${id}-alert`);
+// 	alertContainer.setAttribute('class', 'dmo-alert-container');
+// 	let alertContent = document.createElement('div');
+// 	alertContent.setAttribute('class', 'dmo-alert-content');
+// 	let alertText = document.createElement('span');
+// 	alertText.setAttribute('style', `color:${color}`);
+// 	alertText.innerHTML = message;
+
+// 	domAppendHelper(['#dmo-alert', alertContainer, alertContent, alertText]);
+// 	//$('#dmo-alert').append(alertContainer)
+
+// 	setTimeout(() => {
+// 		console.log('Removing Alert');
+// 		$(`${id}-alert`).remove();
+// 	}, 5000);
+// };
 
 /* +-------------------+ */
 /* | Handle Text Input | */
