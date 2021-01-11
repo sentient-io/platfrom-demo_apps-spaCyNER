@@ -350,7 +350,7 @@ div ::-webkit-scrollbar-thumb:hover {
 }
 
 .fade {
-	background-color: rgba(0, 0, 0, 0.4) !important;
+	/* background-color: rgba(0, 0, 0, 0.4) !important; */
 }
 
 .modal-body {
@@ -368,4 +368,14 @@ div ::-webkit-scrollbar-thumb:hover {
 .wiki-retrieve-content p {
 	padding: 0;
 	margin: 0;
+}
+
+.tooltip {
+	pointer-events: none;
+  }
+
+  .tooltip-inner {
+    max-width: 350px;
+    /* If max-width does not work, try using width instead */
+    width: 350px; 
 }

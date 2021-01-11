@@ -14,22 +14,22 @@ togglePopUpAlert = (alertTitle, alertMsg) => {
 /* | Toggle Wikipedia Retrieval Result Pupup  | */
 /* +------------------------------------------+ */
 toggleWikiResultPopup = (e) => {
+	console.log(e);
 	let id = e.id;
 	let div = document.createElement('DIV');
+	let title = e.title;
+	let content = e.content;
+
 	$(div).html(`
-    <div class="modal fade" id="${id}" tabindex="-1" area-hidden="true">
+	<div class="modal fade" id="${id}" tabindex="-1" area-hidden="true">
     <div class="modal-dialog d-flex" style="height:100vh">
         <div class="modal-content m-auto p-2">
             <div class="modal-header d-flex justify-content-center">
-                <h5 class="modal-title" id="${id}Title">Retrieving data from Wikipedia...</h5>
+                <h5 class="modal-title" id="${id}Title">${title}</h5>
             </div>
             <div class="modal-body p-3">
                 <div id="${id}Content">
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
+					${content}
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-center">
@@ -161,93 +161,182 @@ renderCardTags = (params) => {
 			`background-color: hsla(${color} .2)`,
 		]);
 		let cardLinkId = `${params.category.replace(
-			/[\(\)\s\'\/]/g,
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
 			''
-		)}-${keyword.replace(/[\(\)\s\'\/]/g, '')}-${item}`;
+		)}-${keyword.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${item}`;
 
 		$(wikiLink).html(keyword);
 
-		$(wikiLink).attr('onClick', `wikiRetrieveKeyword(this)`);
+		$(wikiLink).attr('onmouseover', `wikiRetrieveKeyword(this)`);
+		$(wikiLink).attr('onmouseout', `stopWikiRetrieveKeyword()`);
 
 		// Create bootstrap tool tip
+		$(wikiLink).attr('data-toggle', 'tooltip');
+		// Enable html tool tip
+		$(wikiLink).attr('data-html', 'true');
+		$(wikiLink).attr(
+			'title',
+			`
+		<div id="wikiLinkToolTip">
+		<div class="spinner-border spinner-border-sm" role="status">
+		<span class="sr-only">Loading...</span>
+		</div>
+		<span class="pl-2">Retriving data from wikipedia ...</span>
+		</div>`
+		);
 		$(wikiLink).css('text-decoration', 'none !important');
 		$(wikiLink).attr('id', `${cardLinkId}`);
 		$(cardLinkContainer).append(wikiLink);
 	}
+	$('[data-toggle="tooltip"]').tooltip({
+		animated: 'fade',
+		placement: 'top',
+		html: true,
+	});
 };
 
 // +----------------------------------+ //
 // |  Retrive Keyword from wikipedia  | //
 // +----------------------------------+ //
+var wikiRetrieveTimer;
 wikiRetrieveKeyword = (e) => {
 	// Get text content of clicked link
-	let keyword = e.innerHTML;
-	let id = keyword.replace(/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g, '_');
-	toggleWikiResultPopup({ id: id });
-	wikipediaRetrieval(keyword)
-		.then((res) => {
-			console.log(res);
-			let response = JSON.parse(res);
-			if (
-				response.message ===
-				'Disambigutous keyword.Please choose from the below list and try again'
-			) {
-				// If there are multiple results
-				let content = '';
-				response.results.forEach((keyword) => {
-					content += `<p class="text-underline cursor-pointer" onclick="wikiRetrieveKeyword(this)">${keyword}</p>`;
-				});
-				updateWikiResultPopup({
-					id: id,
-					title: response.message,
-					content: content,
-				});
-			} else {
-				// Display single result
-				let thumbnail = '';
-				if (response.results.thumbnail) {
-					thumbnail = `
-                    <img width="160" class="border" src="${response.results.thumbnail.source}" />
-                    `;
-				}
-				let content = `
-                
-                <div class="d-flex flex-row justify-content-between wiki-retrieve-content">
-                    <div class="col-6 p-0 m-0">
-                    <h5>${keyword}</h5>
-                    <b>Page ID: </b>
-                    <p>${response.results.pageid}</p>
-                    <b class="mt-1">Wikipedia Page URL:</b> 
-                    <a class="s-link mr-2" href="${response.results.url}" target="_blank">
-                    ${response.results.url}
-                    </a>
-                    </div>
+	wikiRetrieveTimer = setTimeout(function () {
+		//
+		let keyword = e.innerHTML;
+		// let id = keyword.replace(
+		// 	/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+		// 	'_'
+		// );
+		let id = e.id;
+		console.log(id);
+		// toggleWikiResultPopup({ id: id });
+		wikipediaRetrieval(keyword)
+			.then((res) => {
+				console.log(res);
+				let response = JSON.parse(res);
+				if (
+					response.message ===
+					'Disambigutous keyword.Please choose from the below list and try again'
+				) {
+					// If there are multiple results
+					let fullContent = '';
+					response.results.forEach((keyword) => {
+						fullContent += `<p class="text-underline cursor-pointer" onclick="wikiRetrieveKeyword(this)">${keyword}</p>`;
+					});
+					let content =
+						'Disambigutous keyword. Please click for the full list ';
 
-                    <div class="col-6 p-0 m-0 text-right">
-                    ${thumbnail}
-                    </div>
-                </div>
-                
-                <b>Summary:</b> 
-                <br />
-                <p>${response.results.summary}</p>
-                <br/>
-                `;
-				updateWikiResultPopup({
-					id: id,
-					title: 'Wikipedia Retrieval Result',
-					content: content,
-				});
-			}
-		})
-		.catch((err) => {
-			console.log(err);
-			updateWikiResultPopup({
-				id: id,
-				title: 'Oops!',
-				content: JSON.parse(err).message,
+					// $(`#${id}`).attr('title', content);
+					// updateWikiResultPopup({
+					// 	id: id,
+					// 	title: response.message,
+					// 	content: content,
+					// });
+
+					$(`#${id}`).tooltip('dispose');
+					$(`#${id}`).attr('title', content);
+					$(`#${id}`).tooltip('show');
+
+					$(`#${id}`).removeAttr('onmouseover');
+					$(`#${id}`).removeAttr('onmouseout');
+
+					let wikiResultPopupContent = {
+						id: id + 'Result',
+						title: 'Wikipedia Retrieval Result',
+						content: fullContent,
+					};
+					$(`#${id}`).attr(
+						'onclick',
+						`toggleWikiResultPopup(${JSON.stringify(wikiResultPopupContent)})`
+					);
+				} else {
+					// Display single result
+					let thumbnail = '';
+					if (response.results.thumbnail) {
+						thumbnail = `
+							<img width="160" class="border" src="${response.results.thumbnail.source}" />
+							`;
+					}
+
+					let content = `${response.results.summary.slice(
+						0,
+						150
+					)}... <p style='color:#c0ff00'><i>Click For Detail</i></p>`;
+
+					let fullContent = `
+					<div class="d-flex flex-row justify-content-between">
+
+					<div class="col-6 p-0 m-0">
+					<h5>${keyword}</h5>
+					<b>Page ID: </b>
+					<p>${response.results.pageid}</p>
+					<b class="mt-1">Wikipedia Page URL:</b>
+					<a class="s-link mr-2" href="${response.results.url}" target="_blank">
+					${response.results.url}
+					</a>
+					</div>
+
+					<div class="col-6 p-0 m-0 text-right">
+					${thumbnail}
+					</div>
+					</div>
+					
+					<br />
+					<br />
+
+					<b>Summary:</b>
+					<br />
+					<p>${response.results.summary.slice(0, 150)}...</p>
+					<br/>
+
+					<button onclick="$(#${id}).tooltip('hide')">Close</button>
+		
+					`;
+					// updateWikiResultPopup({
+					// 	id: id,
+					// 	title: 'Wikipedia Retrieval Result',
+					// 	content: content,
+					// });
+
+					$(`#${id}`).tooltip('dispose');
+					$(`#${id}`).attr('title', fullContent);
+					$(`#${id}`).tooltip('show');
+
+					$(`#${id}`).removeAttr('onmouseover');
+					$(`#${id}`).removeAttr('onmouseout');
+
+					let wikiResultPopupContent = {
+						id: id + 'Result',
+						title: 'Wikipedia Retrieval Result',
+						content: fullContent,
+					};
+					// Toggle popup window function
+					// $(`#${id}`).attr(
+					// 	'onclick',
+					// 	`toggleWikiResultPopup(${JSON.stringify(wikiResultPopupContent)})`
+					// );
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+				// updateWikiResultPopup({
+				// 	id: id,
+				// 	title: 'Oops!',
+				// 	content: JSON.parse(err).message,
+				// });
 			});
-		});
+		// Time out count down
+		// console.log(e);
+	}, 50);
+};
+
+stopWikiRetrieveKeyword = function () {
+	clearTimeout(wikiRetrieveTimer);
+	console.log('time out cleared');
 };
 
 // +--------------------------+ //
