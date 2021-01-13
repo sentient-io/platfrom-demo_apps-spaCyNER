@@ -1,4 +1,6 @@
-let data = {};
+let data = {
+	retrievedID: [],
+};
 let state = {};
 
 /* +---------------------+ */
@@ -8,47 +10,6 @@ togglePopUpAlert = (alertTitle, alertMsg) => {
 	$('#alertContent').html(alertMsg);
 	$('#alertTitle').html(alertTitle);
 	$('#alert').modal('toggle');
-};
-
-/* +------------------------------------------+ */
-/* | Toggle Wikipedia Retrieval Result Pupup  | */
-/* +------------------------------------------+ */
-toggleWikiResultPopup = (e) => {
-	console.log(e);
-	let id = e.id;
-	let div = document.createElement('DIV');
-	let title = e.title;
-	let content = e.content;
-
-	$(div).html(`
-	<div class="modal fade" id="${id}" tabindex="-1" area-hidden="true">
-    <div class="modal-dialog d-flex" style="height:100vh">
-        <div class="modal-content m-auto p-2">
-            <div class="modal-header d-flex justify-content-center">
-                <h5 class="modal-title" id="${id}Title">${title}</h5>
-            </div>
-            <div class="modal-body p-3">
-                <div id="${id}Content">
-					${content}
-                </div>
-            </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-            </div>
-        </div>
-    </div>
-    `);
-	$('#resultPopup').append(div);
-	$(`#${id}`).modal('toggle');
-};
-
-updateWikiResultPopup = (e) => {
-	let id = e.id;
-	let title = e.title;
-	let content = e.content;
-	$(`#${id}Title`).html(title);
-	$(`#${id}Content`).html(content);
 };
 
 // +--------------------+ //
@@ -66,11 +27,11 @@ handelText = (textAreaId) => {
 			// Vertically expand text area
 			$('#textArea').attr('rows', 20);
 			$('#handelTextBtn, #handelRestartBtn').toggle();
-			console.log(resolve);
+			//console.log(resolve);
 		})
 		.catch((reject) => {
 			// Handle spaCyNER error
-			console.log('Error');
+			//console.log('Error');
 			togglePopUpAlert(
 				`Error: ${reject.status}`,
 				reject.responseText
@@ -131,35 +92,11 @@ let params = {
 renderCardTags = (params) => {
 	let icon = params.icon;
 	let color = randomColor(0, 35, 50, 36, 1, 1, 10);
-	let card = createDomElement([
-		'div',
-		'card',
-		`background-color: hsla(${color} .1)`,
-	]);
-	let cardBody = createDomElement(['div', 'card-body p-0', '']);
-	let cardTitleContainer = createDomElement([
-		'div',
-		'card-title-container',
-		`background-color: hsla(${color} .4); color:#424242 `,
-	]);
-	let titleIcon = createDomElement(['span', `mr-2 fas ${icon}`, '']);
-	let title = createDomElement(['b', 'm-0 card-title text-center', '']);
-	let cardLinkContainer = createDomElement(['div', 'card-link-container', '']);
-	$(title).html(`${params.category}`);
 
-	$(cardTitleContainer).append(titleIcon, title);
-	$(cardBody).append(cardTitleContainer, cardLinkContainer);
-	domAppendHelper(['#result', card, cardBody]);
+	let links = '';
 
 	for (item in params.details) {
 		let keyword = $.trim(params.details[item]);
-
-		// Creating individual link item, with hover tool tip
-		let wikiLink = createDomElement([
-			'a',
-			'card-link icon-link',
-			`background-color: hsla(${color} .2)`,
-		]);
 		let cardLinkId = `${params.category.replace(
 			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
 			''
@@ -168,175 +105,83 @@ renderCardTags = (params) => {
 			''
 		)}-${item}`;
 
-		$(wikiLink).html(keyword);
-
-		$(wikiLink).attr('onmouseover', `wikiRetrieveKeyword(this)`);
-		$(wikiLink).attr('onmouseout', `stopWikiRetrieveKeyword()`);
-
-		// Create bootstrap tool tip
-		$(wikiLink).attr('data-toggle', 'tooltip');
-		// Enable html tool tip
-		$(wikiLink).attr('data-html', 'true');
-		$(wikiLink).attr(
-			'title',
-			`
-		<div id="wikiLinkToolTip">
-		<div class="spinner-border spinner-border-sm" role="status">
-		<span class="sr-only">Loading...</span>
-		</div>
-		<span class="pl-2">Retriving data from wikipedia ...</span>
-		</div>`
-		);
-		$(wikiLink).css('text-decoration', 'none !important');
-		$(wikiLink).attr('id', `${cardLinkId}`);
-		$(cardLinkContainer).append(wikiLink);
+		// Creating individual link item, with hover tool tip
+		let wikiLink = `
+		<a id="${cardLinkId}" 
+		class="card-link icon-link" 
+		style="background-color:hsla(${color} .2)"
+        >
+        ${keyword}
+        </a>
+        `;
+		links += wikiLink;
 	}
-	$('[data-toggle="tooltip"]').tooltip({
-		animated: 'fade',
-		placement: 'top',
-		html: true,
-	});
-};
 
-// +----------------------------------+ //
-// |  Retrive Keyword from wikipedia  | //
-// +----------------------------------+ //
-var wikiRetrieveTimer;
-wikiRetrieveKeyword = (e) => {
-	// Get text content of clicked link
-	wikiRetrieveTimer = setTimeout(function () {
-		//
-		let keyword = e.innerHTML;
-		// let id = keyword.replace(
-		// 	/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
-		// 	'_'
-		// );
-		let id = e.id;
-		console.log(id);
-		// toggleWikiResultPopup({ id: id });
-		wikipediaRetrieval(keyword)
-			.then((res) => {
-				console.log(res);
-				let response = JSON.parse(res);
-				if (
-					response.message ===
-					'Disambigutous keyword.Please choose from the below list and try again'
-				) {
-					// If there are multiple results
-					let fullContent = '';
-					response.results.forEach((keyword) => {
-						fullContent += `<p class="text-underline cursor-pointer" onclick="wikiRetrieveKeyword(this)">${keyword}</p>`;
+	let card = `
+    <div class="card" style="background-color:hsla(${color} .1)">
+        <div class="card-body p-0">
+
+            <div class="card-title-container" 
+            style="background-color: hsla(${color} .4); color:#424242 ">
+                <span class="mr-2 fas ${icon}">                 
+                </span>
+                <b clas="m-0 card-title text-center">
+                ${params.category}
+                </b>
+            </div>
+
+            <div class="card-link-container">
+                ${links}
+            </div>
+        </div>
+    </div>
+    `;
+
+	$('#result').append(card);
+
+	for (item in params.details) {
+		let keyword = $.trim(params.details[item]);
+		let cardLinkId = `${params.category.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${keyword.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${item}`;
+
+		// Create tool tip
+		tippy(`#${cardLinkId}`, {
+			content: `
+			    <div class='spinner-border spinner-border-sm' role='status'></div>
+				<span class='pl-2'>Retrieving data from wikipedia ...</span>`,
+			allowHTML: true,
+			maxWidth: 500,
+			delay: 350,
+			// On tool tip triggered
+			onShow(instance, partialProps) {
+				// If the cardLinkId haven't been retrived
+				if (!data.retrievedID.includes(cardLinkId)) {
+					// Store retrieved ID, avoid duplicated API call
+					data.retrievedID.push(cardLinkId);
+
+					let cardElement = document.getElementById(cardLinkId);
+					//console.log(cardElement);
+					retrieveKeyword(cardElement).then((content) => {
+						instance.setContent(content);
+						instance.setProps({
+							delay: 200,
+							interactive: true,
+						});
+					}).catch(error =>{
+						instance.setContent(error);
+						instance.setProps({
+							delay: 200,
+						});
 					});
-					let content =
-						'Disambigutous keyword. Please click for the full list ';
-
-					// $(`#${id}`).attr('title', content);
-					// updateWikiResultPopup({
-					// 	id: id,
-					// 	title: response.message,
-					// 	content: content,
-					// });
-
-					$(`#${id}`).tooltip('dispose');
-					$(`#${id}`).attr('title', content);
-					$(`#${id}`).tooltip('show');
-
-					$(`#${id}`).removeAttr('onmouseover');
-					$(`#${id}`).removeAttr('onmouseout');
-
-					let wikiResultPopupContent = {
-						id: id + 'Result',
-						title: 'Wikipedia Retrieval Result',
-						content: fullContent,
-					};
-					$(`#${id}`).attr(
-						'onclick',
-						`toggleWikiResultPopup(${JSON.stringify(wikiResultPopupContent)})`
-					);
-				} else {
-					// Display single result
-					let thumbnail = '';
-					if (response.results.thumbnail) {
-						thumbnail = `
-							<img width="160" class="border" src="${response.results.thumbnail.source}" />
-							`;
-					}
-
-					let content = `${response.results.summary.slice(
-						0,
-						150
-					)}... <p style='color:#c0ff00'><i>Click For Detail</i></p>`;
-
-					let fullContent = `
-					<div class="d-flex flex-row justify-content-between">
-
-					<div class="col-6 p-0 m-0">
-					<h5>${keyword}</h5>
-					<b>Page ID: </b>
-					<p>${response.results.pageid}</p>
-					<b class="mt-1">Wikipedia Page URL:</b>
-					<a class="s-link mr-2" href="${response.results.url}" target="_blank">
-					${response.results.url}
-					</a>
-					</div>
-
-					<div class="col-6 p-0 m-0 text-right">
-					${thumbnail}
-					</div>
-					</div>
-					
-					<br />
-					<br />
-
-					<b>Summary:</b>
-					<br />
-					<p>${response.results.summary.slice(0, 150)}...</p>
-					<br/>
-
-					<button onclick="$(#${id}).tooltip('hide')">Close</button>
-		
-					`;
-					// updateWikiResultPopup({
-					// 	id: id,
-					// 	title: 'Wikipedia Retrieval Result',
-					// 	content: content,
-					// });
-
-					$(`#${id}`).tooltip('dispose');
-					$(`#${id}`).attr('title', fullContent);
-					$(`#${id}`).tooltip('show');
-
-					$(`#${id}`).removeAttr('onmouseover');
-					$(`#${id}`).removeAttr('onmouseout');
-
-					let wikiResultPopupContent = {
-						id: id + 'Result',
-						title: 'Wikipedia Retrieval Result',
-						content: fullContent,
-					};
-					// Toggle popup window function
-					// $(`#${id}`).attr(
-					// 	'onclick',
-					// 	`toggleWikiResultPopup(${JSON.stringify(wikiResultPopupContent)})`
-					// );
 				}
-			})
-			.catch((err) => {
-				console.log(err);
-				// updateWikiResultPopup({
-				// 	id: id,
-				// 	title: 'Oops!',
-				// 	content: JSON.parse(err).message,
-				// });
-			});
-		// Time out count down
-		// console.log(e);
-	}, 50);
-};
-
-stopWikiRetrieveKeyword = function () {
-	clearTimeout(wikiRetrieveTimer);
-	console.log('time out cleared');
+			},
+		});
+	}
 };
 
 // +--------------------------+ //

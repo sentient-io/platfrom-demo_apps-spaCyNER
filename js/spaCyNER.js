@@ -1,5 +1,5 @@
 spaCyNER = (text) => {
-	console.log('Calling Spacy NER API');
+	//console.log('Calling Spacy NER API');
 	return new Promise((resolve, reject) => {
 		loadingStart();
 		$.ajax({
@@ -14,7 +14,7 @@ spaCyNER = (text) => {
 			success: (response) => {
 				let results = response.results;
 				loadingEnd();
-				console.log('Success');
+				//console.log('Success');
 				if (Object.keys(results)[0]) {
 					for (items in Object.keys(results)) {
 						renderCardTags({
@@ -33,7 +33,7 @@ spaCyNER = (text) => {
 				}
 			},
 			error: (err) => {
-				console.log(`Error: ${err.status}`);
+				//console.log(`Error: ${err.status}`);
 				loadingEnd();
 				reject(err);
 			},
