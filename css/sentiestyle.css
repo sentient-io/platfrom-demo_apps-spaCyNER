@@ -40,6 +40,14 @@ a:hover {
 	color: #424242;
 }
 
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.text-underline {
+	text-decoration: underline;
+}
+
 /* Background */
 .bg-wave-pattern {
 	background: #f5f5f5 url('../img/bg-waveline.png') no-repeat center bottom;
@@ -261,7 +269,7 @@ div ::-webkit-scrollbar-thumb:hover {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
-	padding-right: 0.25rem;
+	margin-left: 0.5rem;
 	border-radius: 10px !important;
 	color: rgb(167, 167, 167);
 	background-image: url('../img/loading.gif');
@@ -331,6 +339,85 @@ div ::-webkit-scrollbar-thumb:hover {
 	text-align: center;
 }
 
+/*-----------------------------*/
+/*   Demo App Specified Style  */
+/*-----------------------------*/
+.card-link {
+	cursor: pointer;
+}
+.card-link:hover {
+	filter: saturate(3) !important;
+}
+
+.fade {
+	/* background-color: rgba(0, 0, 0, 0.4) !important; */
+}
+
+.modal-body {
+	max-height: 350px;
+	overflow: scroll;
+}
+
+.s-link {
+	color: rgb(116, 188, 244) !important;
+	cursor: pointer;
+	text-decoration: underline;
+	word-break: break-word;
+}
+
+.wiki-retrieve-content p {
+	padding: 0;
+	margin: 0;
+}
+
+.tooltip {
+	/* pointer-events: none; */
+}
+
+.tooltip-inner {
+	padding: 24px;
+	max-width: 500px;
+	/* If max-width does not work, try using width instead */
+	/* width: 500px; */
+	max-height: 200px;
+	overflow: scroll;
+	background-color: white !important;
+	color: black;
+	border: #424242 solid 1px;
+}
+
+.tooltip.bottom .tooltip-arrow {
+	background-color: white !important;
+}
+
+.text-left {
+	text-align: left;
+}
+
+.tippy-content {
+	max-height: 200px;
+	overflow: scroll;
+	scrollbar-color: grey rgba(0,0,0,0);
+}
+
+.tippy-content::-webkit-scrollbar {
+	background: rgba(0, 0, 0, 0);
+	width: 10px;
+	height: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(150, 150, 150, 0.2);
+	border: none !important;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: rgba(0, 0, 0, 0);
+	width: 4px;
+	height: 0px !important;
+	display: none !important;
+}
 .content{	
     display: flex;
     flex-direction: column;

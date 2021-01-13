@@ -1,4 +1,6 @@
-let data = {};
+let data = {
+	retrievedID: [],
+};
 let state = {};
 
 /* +---------------------+ */
@@ -25,11 +27,11 @@ handelText = (textAreaId) => {
 			// Vertically expand text area
 			$('#textArea').attr('rows', 20);
 			$('#handelTextBtn, #handelRestartBtn').toggle();
-			console.log(resolve);
+			//console.log(resolve);
 		})
 		.catch((reject) => {
 			// Handle spaCyNER error
-			console.log('Error');
+			//console.log('Error');
 			togglePopUpAlert(
 				`Error: ${reject.status}`,
 				reject.responseText
@@ -90,64 +92,96 @@ let params = {
 renderCardTags = (params) => {
 	let icon = params.icon;
 	let color = randomColor(0, 35, 50, 36, 1, 1, 10);
-	let card = createDomElement([
-		'div',
-		'card',
-		`background-color: hsla(${color} .1)`,
-	]);
-	let cardBody = createDomElement(['div', 'card-body p-0', '']);
-	let cardTitleContainer = createDomElement([
-		'div',
-		'card-title-container',
-		`background-color: hsla(${color} .4); color:#424242 `,
-	]);
-	let titleIcon = createDomElement(['span', `mr-2 fas ${icon}`, '']);
-	let title = createDomElement(['b', 'm-0 card-title text-center', '']);
-	let cardLinkContainer = createDomElement(['div', 'card-link-container', '']);
-	$(title).html(`${params.category}`);
 
-	$(cardTitleContainer).append(titleIcon, title);
-	$(cardBody).append(cardTitleContainer, cardLinkContainer);
-	domAppendHelper(['#result', card, cardBody]);
+	let links = '';
 
 	for (item in params.details) {
 		let keyword = $.trim(params.details[item]);
+		let cardLinkId = `${params.category.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${keyword.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${item}`;
 
 		// Creating individual link item, with hover tool tip
-		let wikiLink = createDomElement([
-			'a',
-			'card-link icon-link',
-			`background-color: hsla(${color} .2)`,
-		]);
-		let cardLinkId = `${params.category.replace(
-			/[\(\)\s\'\/]/g,
-			''
-		)}-${keyword.replace(/[\(\)\s\'\/]/g, '')}-${item}`;
-
-		$(wikiLink).html(keyword);
-
-		//Hover to fetch data from wikipedia
-		$(wikiLink).attr(
-			'onmouseenter',
-			`delayWikiRetrieval("${keyword}", "${cardLinkId}")`
-		);
-
-		$(wikiLink).attr('onmouseout', `cancelWikiRetrival()`);
-
-		// Create bootstrap tool tip
-		$(wikiLink).attr('data-toggle', 'tooltip');
-		$(wikiLink).attr('data-html', 'true');
-		$(wikiLink).css('text-decoration', 'none !important');
-		//$(wikiLink).attr('href', '#');
-		$(wikiLink).attr(
-			'title',
-			'<img class="mr-1" src="img/loading.gif" width="16px" height="16px" /> Loading data from wikipedia ... '
-		);
-		$(wikiLink).attr('id', `${cardLinkId}`);
-		$(cardLinkContainer).append(wikiLink);
+		let wikiLink = `
+		<a id="${cardLinkId}" 
+		class="card-link icon-link" 
+		style="background-color:hsla(${color} .2)"
+        >
+        ${keyword}
+        </a>
+        `;
+		links += wikiLink;
 	}
-	// Call the function below everytime when there is a DOM change to display the Bootstrap tool tip
-	$('[data-toggle="tooltip"]').tooltip();
+
+	let card = `
+    <div class="card" style="background-color:hsla(${color} .1)">
+        <div class="card-body p-0">
+
+            <div class="card-title-container" 
+            style="background-color: hsla(${color} .4); color:#424242 ">
+                <span class="mr-2 fas ${icon}">                 
+                </span>
+                <b clas="m-0 card-title text-center">
+                ${params.category}
+                </b>
+            </div>
+
+            <div class="card-link-container">
+                ${links}
+            </div>
+        </div>
+    </div>
+    `;
+
+	$('#result').append(card);
+
+	for (item in params.details) {
+		let keyword = $.trim(params.details[item]);
+		let cardLinkId = `${params.category.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${keyword.replace(
+			/[\'\"\`\~\/\>\<\.\,\?\#\$\%\^\&\*\{\}\[\]\:\(\)\s]/g,
+			''
+		)}-${item}`;
+
+		// Create tool tip
+		tippy(`#${cardLinkId}`, {
+			content: `
+			    <div class='spinner-border spinner-border-sm' role='status'></div>
+				<span class='pl-2'>Retrieving data from wikipedia ...</span>`,
+			allowHTML: true,
+			maxWidth: 500,
+			delay: 350,
+			// On tool tip triggered
+			onShow(instance, partialProps) {
+				// If the cardLinkId haven't been retrived
+				if (!data.retrievedID.includes(cardLinkId)) {
+					// Store retrieved ID, avoid duplicated API call
+					data.retrievedID.push(cardLinkId);
+
+					let cardElement = document.getElementById(cardLinkId);
+					//console.log(cardElement);
+					retrieveKeyword(cardElement).then((content) => {
+						instance.setContent(content);
+						instance.setProps({
+							delay: 200,
+							interactive: true,
+						});
+					}).catch(error =>{
+						instance.setContent(error);
+						instance.setProps({
+							delay: 200,
+						});
+					});
+				}
+			},
+		});
+	}
 };
 
 // +--------------------------+ //
@@ -198,33 +232,6 @@ loadingEnd = () => {
 $('#textArea').keyup(function () {
 	$('#word-counter').text($.trim(this.value.length) + '/5000');
 });
-
-// +---------+ //
-// |  Alert  | //
-// +---------+ //
-toggleAlert = (data) => {
-	console.log('Alert toggled');
-	let id = data.id;
-	let message = data.message;
-	let color = data.color;
-
-	let alertContainer = document.createElement('div');
-	alertContainer.setAttribute('id', `${id}-alert`);
-	alertContainer.setAttribute('class', 'dmo-alert-container');
-	let alertContent = document.createElement('div');
-	alertContent.setAttribute('class', 'dmo-alert-content');
-	let alertText = document.createElement('span');
-	alertText.setAttribute('style', `color:${color}`);
-	alertText.innerHTML = message;
-
-	domAppendHelper(['#dmo-alert', alertContainer, alertContent, alertText]);
-	//$('#dmo-alert').append(alertContainer)
-
-	setTimeout(() => {
-		console.log('Removing Alert');
-		$(`${id}-alert`).remove();
-	}, 5000);
-};
 
 /* +-------------------+ */
 /* | Handle Text Input | */
